@@ -3,7 +3,7 @@ n reducers used to create new state
 */
 
 import { combineReducers } from 'redux'
-import { AUTH_SUCCESS, ERROR_MSG, RECEIVE_USER, RESET_USER } from './actionTypes'
+import { AUTH_SUCCESS, ERROR_MSG, RECEIVE_USER, RESET_USER, RECEIVE_USER_LIST } from './actionTypes'
 import { getRedirectPath } from '../utils/index'
 
 const initUser = {
@@ -23,7 +23,19 @@ function user(preState = initUser, action) {
         case RECEIVE_USER:
             return {...action.data };
         case RESET_USER:
-            return {...initUser, msg: action.data };
+            return {...initUser, msg: action.data + '0000----------' };
+        default:
+            return preState;
+    }
+}
+
+
+const initUserList = []
+
+function userList(preState = initUserList, action) {
+    switch (action.type) {
+        case RECEIVE_USER_LIST:
+            return action.data;
         default:
             return preState;
     }
@@ -31,5 +43,6 @@ function user(preState = initUser, action) {
 
 
 export default combineReducers({
-    user
+    user,
+    userList
 })

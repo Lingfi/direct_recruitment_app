@@ -292,19 +292,16 @@ update more infomation replies on cookie(userid)
         hrinfo/developerinfo/hr/developer are all child routes in main page
 
 ************
-
+不是任何人可以登录到 hr/hrinfo/developer/developerinfo 
+    由main来控制access 用cookie的userid  login和register成功都把_id加到cookie里面
 16. main page 
     
     1. auto login or redirect from infor page
         npm install js-cookie --save
 
-        11. check cookie.get('userid')
-                if exist request more information from server
-                else redirect to login page
+        11. router  get  /user
 
-        22. router  get  /user
-
-        33. ajax  reqUser
+        22. ajax  /reqUser
 
         33. redux 
             1_. action-type 
@@ -313,6 +310,114 @@ update more infomation replies on cookie(userid)
                     getUser async->sync
                     sync use the receiveUser, resetUser
             3. reducer is the same
-    
-        
 
+to get user information if cookie exists but full info not
+        44. in main page in componentDidMount call this action to check whether have    user information if userid exist but _id(which means user info not exist)
+
+to auto jump to distination page if userid and _id both exist
+    1)from cookie or 2)login or 3)register
+        55. check cookie.get('userid')
+                1_. if exist request more information from server
+                    else redirect to login page
+                2_. if _id exist 
+                    11. calculate path (/utils/getredirectpath) if path==='/'
+                        move to hr/developer page 
+                        if header not exist jump to info page
+
+
+    2. complete the child routes in the main page
+        11. hr  containers/hr/hr.jsx
+        22. developer containers/developer/
+        33. message  containers/message/
+        44. personal  containers/personal
+        55. 404 error  componenet/not_found
+
+
+    3. hr/developer/message/personal --- they have header and footer
+        hrinfo/developerinfo/notfound -- theny dont have
+
+        1. navlist used to display header and footer
+        2. use path(/utils/getredirectpath) to decide if direct path in navlist
+            hr/developer/message/personal 
+        3. if currentNav exist display hearder and footer
+
+        4. footer component
+            11. pass the navlist to footer
+                before pass to footer
+                    if path === 'hr' hide the 'developer' nav --hide
+                    or converse 
+            22. filter the hide nav before display --in footer component
+
+            33. when click need to move to corresponding page
+                component is not in the route
+                use ---import {withRouter} from 'react-router-dom'---
+                    then this.props.history.replace(nav.path) 
+
+            44. get destination path if match with the current nav.path it is selected show the different icon
+    
+main page的流程
+    1. 在加载完 检查cookie如果cookie在 id不再 就异步获得user的全部信息
+    2. 在render里面 如果cookie不再 就跳转到login页面
+    3. cookie在 user的信息会被加载的 然后计算出 下面的path hr/hrinfo 根据header
+        这里实现自动登录 如果输入是‘/’根目录也会自动跳转
+    4. 根据输入路径 选择是否显示头部和底部
+        根部拿到传入的navlist过滤到其中一个nav显示到tabbar里面
+            拿到上面传入的location里面的path确定哪个被选中就是显示被选中的图标
+            点击跳转显示对应界面
+            nav每个有自己的path和上面传的不相关 但是一致就说明被选择 显示不同的图标
+
+****************************************
+
+17. personal page
+    1. convert UI to container that can get user and all information
+        display header, username, company use Result from antd-m
+        display position, info, salary
+        dispaly button
+
+    2. logout function use modal from antd-m
+        import resetUser action
+    
+18. userlist 
+    1. router side
+        test postman
+
+    2. redux
+        11. api
+        22. action-type
+        33. build a new reducer userlist
+        44. action async->sync
+
+    3. a common userlist component for hr/developer
+        which receive userlist from father component then display use Card from antd
+
+    4. in hr/developer import this component and the userlist state 
+        componentdidmout init uselist by the dif types
+
+******************************
+19. real-time chat   /message
+        npm install --save socket.io     --both server and client 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+分解对象 键值
+object.keys(objxx).foreach(key)=>{key键 = objxx[key]值}
+
+component 文件 不和redux有交互 可以通过this.props.location 拿到父类的 path
+不能发history.push 用withRouter可以

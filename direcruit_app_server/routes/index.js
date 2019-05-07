@@ -52,6 +52,8 @@ router.post('/register', function(req, res) {
 
 })
 
+
+// ignore these parameters
 const filter = { password: 0, __v: 0 };
 // user login router
 router.post('/login', function(req, res) {
@@ -70,6 +72,7 @@ router.post('/login', function(req, res) {
 })
 
 
+// update information 
 router.post('/update', function(req, res) {
     // obtain user id first
     const userid = req.cookies.userid
@@ -96,9 +99,11 @@ router.post('/update', function(req, res) {
     })
 })
 
+
+// get user information for the main page
 router.get('/user', function(req, res) {
+    // same to above 
     const userid = req.cookies.userid
-    console.log(userid + '------')
     if (!userid) {
         res.send({ code: 1, msg: 'please login userid not exist' })
         return
@@ -110,5 +115,14 @@ router.get('/user', function(req, res) {
     })
 })
 
+// retrieve users by user type 
+router.get('/userlist', function(req, res) {
+    // get type 
+    const { type } = req.query
+        // search by type
+    UserModel.find({ type }, filter, function(err, users) {
+        res.send({ code: 0, data: users })
+    })
+})
 
 module.exports = router;

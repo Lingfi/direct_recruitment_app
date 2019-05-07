@@ -9,7 +9,7 @@ class HeaderSelector extends Component {
         this.headerList = []
         for(var i=0; i<20; i++){
             const text = `header${i+1}`
-            this.headerList.push({text, icon: require(`./headers/${text}.png`)})
+            this.headerList.push({text, icon: require(`../../asssets/headers/${text}.png`)})
         }
     }
 

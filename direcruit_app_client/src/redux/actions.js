@@ -3,16 +3,17 @@
  */
 
 // action-types
-import { AUTH_SUCCESS, ERROR_MSG, RECEIVE_USER, RESET_USER } from './actionTypes'
+import { AUTH_SUCCESS, ERROR_MSG, RECEIVE_USER, RESET_USER, RECEIVE_USER_LIST } from './actionTypes'
 // ajax request 
-import { reqRegister, reqLogin, reqUpdateUser } from '../api/index'
+import { reqRegister, reqLogin, reqUpdateUser, reqUser, reqUserList } from '../api/index'
 
 
 // the sync action return {type, payload}
 const authSuccess = (user) => { return { type: AUTH_SUCCESS, data: user } }
 const error_msg = (msg) => { return { type: ERROR_MSG, data: msg } }
 const receiveUser = (user) => { return { type: RECEIVE_USER, data: user } }
-const resetUser = (msg) => { return { type: RESET_USER, data: msg } }
+export const resetUser = (msg) => { return { type: RESET_USER, data: msg } }
+const receiveUserList = (userlist) => { return { type: RECEIVE_USER_LIST, data: userlist } }
 
 export function register(user) {
     const { username, password, password2, type } = user
@@ -89,6 +90,36 @@ export function update(user) {
             dispatch(receiveUser(result.data))
         } else { //fail
             dispatch(resetUser(result.msg))
+        }
+    }
+}
+
+
+// get user information from db
+// almost same above
+export function getUser() {
+
+    return async dispatch => {
+
+        const response = await reqUser()
+        const result = response.data
+
+        if (result.code === 0) {
+            dispatch(receiveUser(result.data))
+        } else {
+            dispatch(resetUser(result.msg))
+        }
+    }
+}
+
+
+// get user list by specific type
+export function getUserList(type) {
+    return async dispatch => {
+        const repsonse = await reqUserList(type);
+        const result = repsonse.data
+        if (result.code === 0) {
+            dispatch(receiveUserList(result.data))
         }
     }
 }
