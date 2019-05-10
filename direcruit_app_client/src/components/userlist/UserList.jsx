@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import {WingBlank, WhiteSpace, Card} from 'antd-mobile'
+import {withRouter} from 'react-router-dom'
+
 const Header = Card.Header
 const Body = Card.Body
 
@@ -14,7 +16,9 @@ class UserList extends Component {
                 {userList.map(user=>(
                     <div key={user._id}>
                         <WhiteSpace />
-                        <Card>
+                        <Card
+                            onClick = {()=>{this.props.history.push(`/chat/${user._id}`)}}
+                        >
                             <Header
                                 thumb={user.header ?
                                     require(`../../asssets/headers/${user.header}.png`)
@@ -36,4 +40,4 @@ class UserList extends Component {
     }
 }
 
-export default UserList;
+export default withRouter(UserList);

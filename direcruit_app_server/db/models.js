@@ -29,3 +29,18 @@ const userScheme = mongoose.Schema({
 const UserModel = mongoose.model('user', userScheme)
 
 exports.UserModel = UserModel;
+
+
+
+// formate for chatMeassage
+const chatSchema = mongoose.Schema({
+    from: { type: String, required: true }, // from who
+    to: { type: String, required: true }, // to who      
+    chat_id: { type: String, required: true }, //
+    content: { type: String, required: true }, // message content
+    read: { type: Boolean, required: true }, // read or not 
+    create_time: { type: Number } // created time
+})
+
+const ChatModel = mongoose.model('chat', chatSchema)
+exports.ChatModel = ChatModel;

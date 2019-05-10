@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-const { UserModel } = require('../db/models');
+const { UserModel, ChatModel } = require('../db/models');
 const md5 = require('blueimp-md5');
 
 /* GET home page. */
@@ -124,5 +124,38 @@ router.get('/userlist', function(req, res) {
         res.send({ code: 0, data: users })
     })
 })
+
+
+// retrieve message and user information(name, header)
+router.get('/mslist', function(req, res) {
+    // get userid 
+    const userid = req.cookies.userid
+    UserModel.find(function(err, docUsers) {
+        let users = {}
+            // save all users' name and header
+        docUsers.forEach(user => {
+                users[user._id] = { username: user.username, header: user.header }
+            })
+            // find all message from or to the current user
+        ChatModel.find({ '$or': [{ from: userid }, { to: userid }] }, filter, function(err, chatMsgs) {
+            // return user's all messages and all users' info
+            res.send({ code: 0, data: { users, chatMsgs } })
+        })
+    })
+})
+
+
+// convert unread message to read
+router.post('/readmsg', function(req, res) {
+    // get the message from others
+    const from = req.body.from
+        // receiver must be me, because theck my unread message
+    const to = req.cookies.userid
+    ChatModel.update({ from, to, read: false }, { read: true }, { multi: true }, function(err, doc) {
+        console.log('/readmsg', doc)
+        res.send({ code: 0, data: doc.nModified })
+    })
+})
+
 
 module.exports = router;

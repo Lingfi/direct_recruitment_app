@@ -17,6 +17,8 @@ import Developer from '../developer/Developer'
 import Message from '../message/Message'
 import Personal from '../personal/Personal'
 
+import Chat from '../chat/Chat'
+
 
 class Main extends Component {
 
@@ -111,6 +113,7 @@ class Main extends Component {
                     <Route path='/developer' component={Developer}></Route>
                     <Route path='/message' component={Message}></Route>
                     <Route path='/personal' component={Personal}></Route>
+                    <Route path='/chat/:userid' component={Chat}></Route>
 
                     <Route component={NotFound}></Route>
                 </Switch> 

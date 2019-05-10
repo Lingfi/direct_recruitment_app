@@ -48,7 +48,7 @@ starts coding
     5) index.js imports  store | provider (use react-redux)
 
 6. write the static register page and login page
-    1) logo has no interact with redux so the new file in component
+    1) logo icon has no interact with redux so the new file in component
 
     2) write the register page using some components from antd-mobile
         e.g. NavBar/WingBlank/List/InputItem/WhiteSpace/Radio/Button
@@ -133,6 +133,7 @@ test mongodb connection------
             therefore all models in one file
             db/model.js
 
+routers.post  register/login
 10. design routes for registration and login connected to mongodb using usermodel
     1) register route 
         11. path   /resigiser
@@ -156,6 +157,7 @@ test mongodb connection------
 ***********************  
 back to the front 
 
+axios api
 11. axios   npm install --save axios
     sends request to the server  /api 
 
@@ -166,6 +168,7 @@ back to the front
         33. type='GET'  default
     2. exports different interfaces for diff requests    /api/index.js
 
+redux -actions async->sync
 12. redux
     1. action-type: 
         11. due the success of register and login both are success and return a user,   they are the some action-type: AUTH_SUCCESS
@@ -181,7 +184,7 @@ back to the front
 
         33. two sync actions -- import action-types
                 1_. xx = (user)=>{return{type, data: user}}
-                1_. yy = (msg)=>{return{type, data: msg}}
+                2_. yy = (msg)=>{return{type, data: msg}}
 
     3. reducers
         11. switch if action.type === 'AUTH_SUCCESS', return {...action.data, redirect}
@@ -189,7 +192,7 @@ back to the front
 
 important!!!!!
     这里dispatch(action) 已经都封装到了action里面 调用dispatch
-    axios也已经封装好了 就只需要传入data参数 在主界面只需要调用 对应的action就可以
+    axios也已经封装好了(api) 就只需要传入data参数 在主界面只需要调用 对应的action就可以
 
 
 UI side------
@@ -217,6 +220,7 @@ according to the existence of msg(fail) or redirectTo(success)
 
 ****************************
 
+select a portrait(mandotry)  optional--complete full information
 14. more informations in register e.g. protrait, personal info, company name...
     1. in the main page set two routes, hr | develop
         they are in different containers  hr-info | developer-info
@@ -231,21 +235,21 @@ according to the existence of msg(fail) or redirectTo(success)
                 grid accept {name, icon: image}
                     1_.const text = `header${i+1}`
                     2_.this.headerList.push({text, icon: require('')})
-            3) grid data={this.headerList},
+            3) grid data={this.headerList}    
 
     3. developer-info static is similar
 
-header select function
-    4. click save to print all info and header name
+    header select function -- get header text from child (name)
+    4. click save to print all info and header name  --test
         1. onchange update state, print info
         2. pass sethead() to component which should return the hearder name back
 
         3. grid onlick method 自动传入参数 el对象 {text, icon}
             1_. update selected icon in the this.state.icon
-                    display if icon exist 
+                    display if icon exist   require引入的图片显示还是要靠<img>来显示
             2_. pass the current text to this.props.sethead(text)
 
-login or reigister to where?   
+    login or reigister to where?   decided by type and header
     5. register or login ---redirectTo 4possible ways
         1. login to hr main page /hr
         2. login to developer main page /developer
@@ -254,18 +258,16 @@ login or reigister to where?
 
         redirectTo according to type and header from action return data  /utils/index
 
-
-update more infomation replies on cookie(userid)
 15. write route side   /update
     1. get userid from cookie  /req.cookies.userid
         11. if not exist return {code:1, msg:'please login'}
-    2. usermodel.findandupdate 
+    2. usermodel.findbyidandupdate 
         1_. olduser if not exist, ask brower to clearCookie, return {code:1,msg}
         2_. return {code:0, newuser}   newuser=obj.assign(old, new)
     3. test
 
 16. redux side
-    1.AJAX add one more module call requpdateuser
+    1.AJAX add one more module call requpdateuser -api
 
     2. action-type 
         11. RECEIVE_USER  //confirm update
@@ -273,7 +275,7 @@ update more infomation replies on cookie(userid)
 
     3. action async->sync
         11. return dispatch import the new AJAX 
-                dispatch sync action according to response.data.msg 
+                dispatch sync action according to response.data.code 
         22. two sync actions
 
     4. reducer
@@ -281,7 +283,7 @@ update more infomation replies on cookie(userid)
         22. RESET_USER return {...inituser, msg}  ****
             //return to login so user info reset to the inituser === clear all info
 
--------
+    UI side
     5. hrinfo/developerinfo pages
         11. import corresponding action
                 check update sucess
@@ -291,35 +293,45 @@ update more infomation replies on cookie(userid)
         
         hrinfo/developerinfo/hr/developer are all child routes in main page
 
-************
+***************
+
 不是任何人可以登录到 hr/hrinfo/developer/developerinfo 
     由main来控制access 用cookie的userid  login和register成功都把_id加到cookie里面
+direct login or back to login/register replies on cookie(userid)
+if userid exists but onther information not --- updare other info and direct login
+
+3种可能 login main page
+1.登录或者注册进入 没有问题 
+2.直接登录 有cookie， 需要链接链接服务器更新信息 
+3.没有cookie跳转到登录
 16. main page 
     
-    1. auto login or redirect from infor page
+    1. a.if auto login or redirect from infor page, full info exist --direct path
+        b.if direct type hr/developer/main but cookie exist --help move to path
+            c.if cookie not exist  --switch to login
         npm install js-cookie --save
 
+    if it is b. case
         11. router  get  /user
 
         22. ajax  /reqUser
 
         33. redux 
             1_. action-type 
-                    use update (RECEIVE_USER, RESET_USER)
+                    use update (RECEIVE_USER, RESET_USER) -existing
             2_. action
-                    getUser async->sync
-                    sync use the receiveUser, resetUser
+                    getUser async->sync     
+                    sync use the receiveUser, resetUser  -existing
             3. reducer is the same
 
-to get user information if cookie exists but full info not
-        44. in main page in componentDidMount call this action to check whether have    user information if userid exist but _id(which means user info not exist)
+        UI side 
+        44. in main page in componentDidMount call this action if userid exist but _id not --- update information
 
-to auto jump to distination page if userid and _id both exist
-    1)from cookie or 2)login or 3)register
         55. check cookie.get('userid')
-                1_. if exist request more information from server
+                1_. if exist request more information from server 
                     else redirect to login page
                 2_. if _id exist 
+        3种可能解决了 还有就是如果是直接登录要计算目标地址 是hr/developer还是需要补全信息hrinfo/developerinfo
                     11. calculate path (/utils/getredirectpath) if path==='/'
                         move to hr/developer page 
                         if header not exist jump to info page
@@ -338,22 +350,26 @@ to auto jump to distination page if userid and _id both exist
 
         1. navlist used to display header and footer
         2. use path(/utils/getredirectpath) to decide if direct path in navlist
-            hr/developer/message/personal 
+            hr/developer/message/personal      yes
+            hrinfo/developer      no 
+        如果上面计算的地址和list的地址一样 需要显示
         3. if currentNav exist display hearder and footer
 
         4. footer component
             11. pass the navlist to footer
-                before pass to footer
+                before pass to footer hide one not needed
                     if path === 'hr' hide the 'developer' nav --hide
                     or converse 
             22. filter the hide nav before display --in footer component
 
             33. when click need to move to corresponding page
                 component is not in the route
-                use ---import {withRouter} from 'react-router-dom'---
+                **use ---import {withRouter} from 'react-router-dom'---
                     then this.props.history.replace(nav.path) 
 
-            44. get destination path if match with the current nav.path it is selected show the different icon
+            44. selected icon need to get the target path from father
+                1. it can be pass in the <component/>
+                2. const {pathname} = this.props.location
     
 main page的流程
     1. 在加载完 检查cookie如果cookie在 id不再 就异步获得user的全部信息
@@ -361,41 +377,89 @@ main page的流程
     3. cookie在 user的信息会被加载的 然后计算出 下面的path hr/hrinfo 根据header
         这里实现自动登录 如果输入是‘/’根目录也会自动跳转
     4. 根据输入路径 选择是否显示头部和底部
-        根部拿到传入的navlist过滤到其中一个nav显示到tabbar里面
+        根部拿到传入的navlist过滤到其中一个nav不需要的 其余的显示到tabbar里面
             拿到上面传入的location里面的path确定哪个被选中就是显示被选中的图标
             点击跳转显示对应界面
-            nav每个有自己的path和上面传的不相关 但是一致就说明被选择 显示不同的图标
 
 ****************************************
 
 17. personal page
-    1. convert UI to container that can get user and all information
+    1. convert UI to container that can get user‘ information
         display header, username, company use Result from antd-m
         display position, info, salary
         dispaly button
 
     2. logout function use modal from antd-m
-        import resetUser action
+        import resetUser action， execute if login onpress
     
 18. userlist 
-    1. router side
+    1. router side   --type decided hr or developer info extracted
         test postman
 
     2. redux
         11. api
         22. action-type
-        33. build a new reducer userlist
+        33. build a new reducer userlist 
         44. action async->sync
 
-    3. a common userlist component for hr/developer
+    3. use a common userlist component to show list   hr/developer
         which receive userlist from father component then display use Card from antd
 
     4. in hr/developer import this component and the userlist state 
-        componentdidmout init uselist by the dif types
+        userlist required to be initialized in componentdidmount where pass type
 
 ******************************
-19. real-time chat   /message
+socketio封装http和webservicer2种方式 为了版本原因
+http是不停的发送请求 询问server是否有数据
+webserver是双向的 响应的
+
+19. socket io
         npm install --save socket.io     --both server and client 
+    1. server, client both need it
+        server side:
+            11. import fn file to get the server obj
+            12. in the fn file use server to get IO obj, then listen on any              'connection', any connection build start receiving or sending msg
+                1) on bind listening
+                2) io emit msg, all connections will receive msg
+                    socket emit msg, only the connected user can receive msg
+
+        client side:
+            1. fn file import client IO then connect to 4000 port, start sending or receiving msg
+            2. import fn file in the app.js entry file
+        
+        above for testing, remove all if no prob
+
+
+20. server side for message function
+    1. new schema
+        11. from who, 
+        22. to who, 
+        33. read or not, 
+        44. content, 
+        55. time,  
+        66. chat_id?  
+
+    2. new model
+        11. /msglist  --get two things 1)users name and header 2)all messages
+            first. get all user corresponding name and header by each's _id
+            second. retrieve all msg to/from the current id
+            code:    ChatModel.find({ '$or': [{ from: userid }, { to: userid }] },              filter, function
+
+        22. /readmsg    ---set all unread message to read, false to true
+            from others, to the current user
+            code:  ChatModel.update({ from, to, read: false }, { read: true }, {             multi: true }
+
+21. static chat page
+    1. register this page to router in main
+        placehold used in the path because path display is /chat/xxxxxuserid
+        so the path will accept a userid at the tail
+    2. click move to chat page 
+        in the userlist set onclick, which the withRouter needed for history.push
+
+
+
+
+        
 
 
 
@@ -421,3 +485,4 @@ object.keys(objxx).foreach(key)=>{key键 = objxx[key]值}
 
 component 文件 不和redux有交互 可以通过this.props.location 拿到父类的 path
 不能发history.push 用withRouter可以
+
