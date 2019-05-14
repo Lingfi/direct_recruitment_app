@@ -127,7 +127,7 @@ router.get('/userlist', function(req, res) {
 
 
 // retrieve message and user information(name, header)
-router.get('/mslist', function(req, res) {
+router.get('/msglist', function(req, res) {
     // get userid 
     const userid = req.cookies.userid
     UserModel.find(function(err, docUsers) {

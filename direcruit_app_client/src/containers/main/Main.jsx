@@ -69,8 +69,9 @@ class Main extends Component {
         const userid = Cookies.get('userid')
         if (!userid) {
             // no userid cookie move to login page
-            this.props.history.replace('/login')
-            return null
+            // this.props.history.replace('/login')
+            // return null
+            return <Redirect to={'/login'}></Redirect>
         }
 
         // having userid cookie stay in the main then find the destinate path

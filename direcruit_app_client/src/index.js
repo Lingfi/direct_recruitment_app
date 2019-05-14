@@ -9,7 +9,7 @@ import Main from './containers/main/Main'
 import store from './redux/store'
 import './asssets/css/index.less'
 
-import './test/socketio_test'
+// import './test/socketio_test'
 
 ReactDOM.render(
     (

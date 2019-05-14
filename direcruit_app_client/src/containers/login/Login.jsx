@@ -51,7 +51,7 @@ class Login extends Component {
                 <WingBlank>
 
                 {/* display error message */}
-                {msg ? <div className="error-msg">{msg}</div>:null}
+                {msg ? <div className="error-msg">{msg}</div>:<div className="error-msg">please login</div>}
 
                     <List>
                         <InputItem

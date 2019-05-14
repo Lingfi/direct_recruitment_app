@@ -409,6 +409,7 @@ main page的流程
         userlist required to be initialized in componentdidmount where pass type
 
 ******************************
+******************************
 socketio封装http和webservicer2种方式 为了版本原因
 http是不停的发送请求 询问server是否有数据
 webserver是双向的 响应的
@@ -431,7 +432,7 @@ webserver是双向的 响应的
 
 
 20. server side for message function
-    1. new schema
+    1. new schema   --mongoose
         11. from who, 
         22. to who, 
         33. read or not, 
@@ -440,7 +441,7 @@ webserver是双向的 响应的
         66. chat_id?  
 
     2. new model
-        11. /msglist  --get two things 1)users name and header 2)all messages
+        11. /msglist  --get two things 1)all users name and header 2)all messages
             first. get all user corresponding name and header by each's _id
             second. retrieve all msg to/from the current id
             code:    ChatModel.find({ '$or': [{ from: userid }, { to: userid }] },              filter, function
@@ -449,12 +450,73 @@ webserver是双向的 响应的
             from others, to the current user
             code:  ChatModel.update({ from, to, read: false }, { read: true }, {             multi: true }
 
-21. static chat page
+21. register static page and guide into this page
     1. register this page to router in main
-        placehold used in the path because path display is /chat/xxxxxuserid
+        placehold used in the path because path display is /chat/:userid
         so the path will accept a userid at the tail
-    2. click move to chat page 
+    3. click move to chat page 
         in the userlist set onclick, which the withRouter needed for history.push
+
+****io part**** click send msg call the async action
+22. chat page 
+    1. click sub button print all info, and submit to server
+        11. 3 info submitted 
+            1) from: user._id 2)to: this.props.match.params.userid 3)content.trim()
+        22. clear content after click --two way binding
+                if content not empty
+
+在action里面用io发送消息    
+    2. action --send message to server and serve message, then send message back
+        11. write io into fn, io is global varible produced if not exist
+        22. because io is globel, action use io listen and send message
+
+在server专门的一个地方用io接受消息 保存到数据库 转发给全部链接用户
+        33. server
+            1) build io and listen on message received
+            2) got mess and create 1_.chat_id 2_. time, save it to db
+            3) send message back
+
+        44. test  --problem is the io build after sending message
+                but if both send message should receive message
+
+        55. now there are msg in db, using postman test routers
+
+23. front end -- axios, redux
+    1. axios -- 1)reqChatMsgList 2)reqReadMsg
+    redux
+    2. action-types -- receive_msg_list, receive_msg
+    3. actions
+        11 when the login/update/getuser should update all the data in the state
+            1)write a fn which be asyn --get return users, msglist then call syn  
+                action(get dispatch) --this fn called in when login/update/get success ***
+            2)init io should be in this fn   --solve problm above 44 **
+        22. sync action pass users, chatmsgs
+    4. reducers
+        new state: chat --two types in 2.
+        init state: {user, chatMsgs, unReadCount}
+    5. check redux in browser
+
+24. ui page --display message list, and header
+    1. get user, get msglist(users, msglist) from state
+    2. combine the chat_id, extract all the message from or to me with one user
+        --filter 
+        codes: chatMsgs.filter(msg=>msg.chat_id===chatId)
+    3. if msg not empty, display
+        if msg.from(me) -display right
+        else display left
+
+    4. get header just once, display if header exist
+
+    5. begin not users or msg, check users return if not exist
+
+25. receive msg and display
+    1. io receive data, everyone receives this data 
+        11. check this data from/to === the current user
+            if true, accept it 
+            dispatch the readmsg sync action
+    2. reducers 
+        11. add this msg to msgs list
+
 
 
 

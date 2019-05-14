@@ -38,7 +38,7 @@ const chatSchema = mongoose.Schema({
     to: { type: String, required: true }, // to who      
     chat_id: { type: String, required: true }, //
     content: { type: String, required: true }, // message content
-    read: { type: Boolean, required: true }, // read or not 
+    read: { type: Boolean, default: false }, // read or not 
     create_time: { type: Number } // created time
 })
 
